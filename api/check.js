@@ -40,7 +40,8 @@ Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks
     });
 
     if (!response.ok) {
-      throw new Error(`Claude API fout: ${response.status}`);
+      const errBody = await response.text();
+      throw new Error(`Claude API fout: ${response.status} - ${errBody}`);
     }
 
     const data = await response.json();
