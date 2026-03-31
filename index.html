@@ -220,7 +220,7 @@
     <input type="text" id="word-input" placeholder="Schrijf een woord..." autocomplete="off" />
     <button id="check-btn">Controleer ✓</button>
   </div>
-  <p class="hint">Typ één woord — geen spaties</p>
+  <p class="hint">Voer 1 woord in</p>
   <div id="result"></div>
 </div>
 
@@ -318,7 +318,7 @@
     const sugBtn = document.getElementById('sug-btn');
     if (sugBtn) {
       sugBtn.addEventListener('click', () => {
-        input.value = correct;
+        input.value = correct.replace(/\s/g, '');
         check();
       });
     }
