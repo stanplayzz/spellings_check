@@ -268,8 +268,15 @@
         body: JSON.stringify({ word })
       });
 
-      if (!resp.ok) throw new Error('Server fout');
       const data = await resp.json();
+
+      if (resp.status === 429) {
+        const reset = data.resetTime || 'morgen om 09:00';
+        result.innerHTML = `<div class="feedback err"><span class="icon">⏳</span> De AI is even vol. Je kunt weer verder op <strong>${reset}</strong>.</div>`;
+        return;
+      }
+
+      if (!resp.ok) throw new Error('Server fout');
 
       if (data.correct) {
         await showOk(data.correctWord || word, data.imageQuery);
