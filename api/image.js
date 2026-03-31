@@ -1,35 +1,56 @@
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { q } = req.query;
-  if (!q) {
-    return res.status(400).json({ error: 'Geen zoekterm opgegeven' });
+  const { word } = req.body;
+  if (!word || typeof word !== 'string') {
+    return res.status(400).json({ error: 'Geen woord opgegeven' });
   }
 
-  const apiKey = process.env.PIXABAY_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'Pixabay sleutel ontbreekt' });
+    return res.status(500).json({ error: 'API sleutel ontbreekt' });
   }
 
   try {
-    const url = `https://pixabay.com/api/?key=${apiKey}&q=${encodeURIComponent(q)}&image_type=photo&safesearch=true&per_page=5&lang=nl`;
-    const response = await fetch(url);
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Controleer het volgende Nederlandse woord op spelling: "${word}"
 
-    if (!response.ok) throw new Error('Pixabay fout');
+Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
+{
+  "correct": true of false,
+  "correctWord": "het juiste Nederlandse woord",
+  "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
+  "imageQuery": "Engels zoekwoord voor een plaatje (1-2 woorden)"
+}`
+            }]
+          }],
+          generationConfig: { temperature: 0.1 }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Gemini API fout: ${response.status} - ${errBody}`);
+    }
 
     const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
 
-    if (data.hits && data.hits.length > 0) {
-      // Kies een willekeurig plaatje uit de eerste 5 resultaten
-      const hit = data.hits[Math.floor(Math.random() * data.hits.length)];
-      return res.status(200).json({ url: hit.webformatURL });
-    } else {
-      return res.status(200).json({ url: null });
-    }
+    return res.status(200).json(parsed);
   } catch (err) {
-    console.error('Plaatje ophalen mislukt:', err);
-    return res.status(200).json({ url: null });
+    console.error('Spelling check fout:', err);
+    return res.status(500).json({ error: 'Kon het woord niet controleren' });
   }
 }
