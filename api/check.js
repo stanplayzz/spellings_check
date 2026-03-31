@@ -38,6 +38,31 @@ Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks
       }
     );
 
+    if (response.status === 429) {
+      // Bereken reset-tijd: middernacht Pacific Time omgezet naar Nederlandse tijd
+      const now = new Date();
+      const pacificOffset = -7; // PDT (zomer), -8 in winter (PST)
+      const dutchOffset = 2;    // CEST (zomer), 1 in winter (CET)
+      const diffHours = dutchOffset - pacificOffset; // 9 uur verschil
+
+      // Middernacht Pacific = 09:00 Nederlandse tijd
+      const resetNL = new Date(now);
+      resetNL.setUTCHours(7, 0, 0, 0); // 07:00 UTC = 09:00 NL (CEST)
+      if (resetNL <= now) resetNL.setUTCDate(resetNL.getUTCDate() + 1);
+
+      const resetStr = resetNL.toLocaleTimeString('nl-NL', {
+        hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Amsterdam'
+      });
+      const resetDay = resetNL.toLocaleDateString('nl-NL', {
+        weekday: 'long', timeZone: 'Europe/Amsterdam'
+      });
+
+      return res.status(429).json({
+        error: 'quotum_vol',
+        resetTime: `${resetDay} om ${resetStr}`
+      });
+    }
+
     if (!response.ok) {
       const errBody = await response.text();
       throw new Error(`Gemini API fout: ${response.status} - ${errBody}`);
