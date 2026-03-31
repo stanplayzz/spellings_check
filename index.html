@@ -71,7 +71,7 @@
     .input-group {
       display: flex;
       gap: 10px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
     }
 
     input[type="text"] {
@@ -91,6 +91,24 @@
     input[type="text"]:focus {
       border-color: var(--blue);
       background: #fff;
+    }
+
+    input[type="text"].shake {
+      animation: shake 0.3s ease;
+      border-color: var(--red);
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      padding-left: 4px;
     }
 
     button#check-btn {
@@ -147,6 +165,7 @@
       font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
+      font-family: 'Nunito', sans-serif;
       transition: background 0.15s;
     }
     .suggestion-btn:hover { background: var(--green-light); }
@@ -201,6 +220,7 @@
     <input type="text" id="word-input" placeholder="Schrijf een woord..." autocomplete="off" />
     <button id="check-btn">Controleer ✓</button>
   </div>
+  <p class="hint">Typ één woord — geen spaties</p>
   <div id="result"></div>
 </div>
 
@@ -211,7 +231,27 @@
   const btn   = document.getElementById('check-btn');
   const result = document.getElementById('result');
 
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+  // Blokkeer spaties in het invoerveld
+  input.addEventListener('keydown', e => {
+    if (e.key === ' ') {
+      e.preventDefault();
+      input.classList.add('shake');
+      setTimeout(() => input.classList.remove('shake'), 400);
+      return;
+    }
+    if (e.key === 'Enter') check();
+  });
+
+  // Verwijder spaties bij plakken
+  input.addEventListener('input', () => {
+    const pos = input.selectionStart;
+    const cleaned = input.value.replace(/\s/g, '');
+    if (cleaned !== input.value) {
+      input.value = cleaned;
+      input.setSelectionRange(pos, pos);
+    }
+  });
+
   btn.addEventListener('click', check);
 
   async function check() {
@@ -253,7 +293,8 @@
       <div id="img-area"></div>`;
 
     try {
-      const imgResp = await fetch(`/api/image?q=${encodeURIComponent(imageQuery || word)}`);
+      // Gebruik het correcte woord zelf als zoekterm, niet de AI-suggestie
+      const imgResp = await fetch(`/api/image?q=${encodeURIComponent(imageQuery)}&exact=${encodeURIComponent(word)}`);
       const imgData = await imgResp.json();
       if (imgData.url) {
         document.getElementById('img-area').innerHTML = `
@@ -262,7 +303,7 @@
             <div class="img-label">Een plaatje van: <strong>${word}</strong></div>
           </div>`;
       }
-    } catch(e) { /* plaatje ophalen mislukt, geen probleem */ }
+    } catch(e) { /* plaatje ophalen mislukt */ }
   }
 
   function showError(raw, correct, uitleg) {
