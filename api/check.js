@@ -1,5 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -16,11 +14,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Controleer het volgende Nederlandse woord op spelling: "${word}"
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Controleer het volgende Nederlandse woord op spelling: "${word}"
 
 Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
 {
@@ -29,9 +31,20 @@ Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks
   "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
   "imageQuery": "Engels zoekwoord voor een plaatje (1-2 woorden)"
 }`
-    });
+            }]
+          }],
+          generationConfig: { temperature: 0.1 }
+        })
+      }
+    );
 
-    const text = response.text;
+    if (!response.ok) {
+      const errBody = await response.text();
+      throw new Error(`Gemini API fout: ${response.status} - ${errBody}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
 
