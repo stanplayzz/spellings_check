@@ -284,7 +284,7 @@
         showError(word, data.correctWord, data.uitleg);
       }
     } catch(e) {
-      result.innerHTML = `<div class="feedback err"><span class="icon">⚠️</span> Er ging iets mis. Probeer opnieuw!</div>`;
+      result.innerHTML = `<div class="feedback err"><span class="icon">⚠️</span> Er ging iets mis. Ververs de pagina en probeer het later.</div>`;
     } finally {
       btn.disabled = false;
     }
@@ -301,7 +301,7 @@
 
     try {
       // Gebruik het correcte woord zelf als zoekterm, niet de AI-suggestie
-      const imgResp = await fetch(`/api/image?q=${encodeURIComponent(imageQuery)}&exact=${encodeURIComponent(word)}`);
+      const imgResp = await fetch(`/api/image?q=${encodeURIComponent(imageQuery)}&word=${encodeURIComponent(word)}`);
       const imgData = await imgResp.json();
       if (imgData.url) {
         document.getElementById('img-area').innerHTML = `
