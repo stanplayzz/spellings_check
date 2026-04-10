@@ -5,10 +5,9 @@ Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks
   "correct": true of false,
   "correctWord": "het juiste Nederlandse woord",
   "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
-  "imageQuery": "Engels zoekwoord voor een plaatje (1-4 woorden)"
+  "imageQuery": "exacte Engelse vertaling van het woord, 1 woord, geschikt als Pixabay zoekterm (bijv: cat, apple, bicycle)"
 }`;
 
-// Reset-tijd: middernacht Pacific = 09:00 Nederlandse tijd
 function getResetTime() {
   const now = new Date();
   const reset = new Date(now);
@@ -74,16 +73,16 @@ export default async function handler(req, res) {
   const groqKey   = process.env.GROQ_API_KEY;
 
   const providers = [];
-  if (geminiKey) providers.push({ name: 'Gemini',      fn: () => tryGemini(word, geminiKey) });
-  if (groqKey)   providers.push({ name: 'Groq Llama',  fn: () => tryGroq(word, groqKey, 'llama-3.3-70b-versatile') });
-  if (groqKey)   providers.push({ name: 'Groq klein',  fn: () => tryGroq(word, groqKey, 'llama-3.1-8b-instant') });
+  if (geminiKey) providers.push({ name: 'Gemini',     fn: () => tryGemini(word, geminiKey) });
+  if (groqKey)   providers.push({ name: 'Groq 70B',   fn: () => tryGroq(word, groqKey, 'llama-3.3-70b-versatile') });
+  if (groqKey)   providers.push({ name: 'Groq 8B',    fn: () => tryGroq(word, groqKey, 'llama-3.1-8b-instant') });
 
   for (const provider of providers) {
     try {
       console.log(`Probeer ${provider.name}...`);
       const result = await provider.fn();
       if (result.exhausted) {
-        console.log(`${provider.name} is vol, volgende proberen...`);
+        console.log(`${provider.name} vol, volgende...`);
         continue;
       }
       const parsed = parseResult(result.text);
@@ -94,9 +93,5 @@ export default async function handler(req, res) {
     }
   }
 
-  // Alle providers zijn op
-  return res.status(429).json({
-    error: 'quotum_vol',
-    resetTime: getResetTime()
-  });
+  return res.status(429).json({ error: 'quotum_vol', resetTime: getResetTime() });
 }
