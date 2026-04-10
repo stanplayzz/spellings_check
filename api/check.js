@@ -86,6 +86,18 @@ export default async function handler(req, res) {
         continue;
       }
       const parsed = parseResult(result.text);
+
+      // Als de AI een correctWord met spatie teruggeeft, is het geen geldig enkel woord
+      if (parsed.correctWord && parsed.correctWord.trim().includes(' ')) {
+        return res.status(200).json({
+          correct: false,
+          correctWord: null,
+          uitleg: 'Vul 1 woord in zonder spaties.',
+          imageQuery: null,
+          _provider: provider.name
+        });
+      }
+
       return res.status(200).json({ ...parsed, _provider: provider.name });
     } catch (err) {
       console.error(`${provider.name} fout:`, err.message);
