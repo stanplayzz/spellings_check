@@ -1,20 +1,26 @@
-const PROMPT = (word) => `Controleer het volgende Nederlandse woord op spelling: "${word}"
+const PROMPT = (word) => `Je bent een spellingchecker voor kinderen van 6-10 jaar op een Nederlandse basisschool.
 
-Regels:
-- Samengestelde woorden met eigennamen zijn correct (bijv: downsyndroom)
-- Medische termen en syndroomnamen zijn correct
-- Controleer alleen op typfouten, niet op "vreemde" woorden
+Controleer het woord: "${word}"
 
-Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
+BELANGRIJK: Markeer "inappropriate: true" voor ALLE woorden die:
+- Verwijzen naar naaktheid of het menselijk lichaam op een seksuele manier
+- Seksueel van aard zijn
+- Grof of vulgair zijn
+- Gewelddadig zijn
+- Niet geschikt zijn voor kinderen
+
+Voorbeelden van inappropriate woorden: naakt, seks, kut, lul, porno, borsten, schelden.
+
+Antwoord ALLEEN met een geldig JSON object:
 {
   "inappropriate": true of false,
   "correct": true of false,
-  "correctWord": "het juiste Nederlandse woord",
-  "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
-  "imageQuery": "Engelse zoekterm voor Pixabay, altijd een CONCREET zelfstandig naamwoord geschikt voor kinderen. Abstracte richtingswoorden vervang je door een scène (bijv: 'beneden' → 'child bottom stairs'). Geef null als het woord ongepast is."
+  "correctWord": "het juiste woord of null",
+  "uitleg": "korte uitleg voor een kind (max 10 woorden) of null",
+  "imageQuery": "Engelse Pixabay zoekterm of null"
 }
 
-Als het woord ongepast, vulgair, seksueel of gewelddadig is voor kinderen: zet inappropriate op true en de rest op null.`;
+Als inappropriate true is, zet dan correct, correctWord, uitleg en imageQuery allemaal op null.`;
 
 function getResetTime() {
   const now = new Date();
