@@ -11,7 +11,10 @@ Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks
   "correct": true of false,
   "correctWord": "het juiste Nederlandse woord",
   "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
-  "imageQuery": "Engelse vertaling van het woord, 1-3 woord, geschikt als Pixabay zoekterm"
+  "imageQuery": "Engelse zoekterm voor Pixabay. Kies altijd een CONCREET zelfstandig naamwoord 
+dat het woord uitlegt voor een kind. Abstracte woorden zoals richtingen vervang je door 
+een scène: 'beneden' → 'child bottom stairs', 'boven' → 'child top stairs', 
+'naast' → 'friends sitting together'. Nooit abstracte termen zoals 'below' of 'above'."
 }`;
 
 function getResetTime() {
