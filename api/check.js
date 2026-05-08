@@ -1,11 +1,17 @@
 const PROMPT = (word) => `Controleer het volgende Nederlandse woord op spelling: "${word}"
 
+Regels:
+- Samengestelde woorden met eigennamen zijn correct (bijv: downsyndroom, alzheimerpatiënt)
+- Medische termen en syndroomnamen zijn correct
+- Engelse leenwoorden die in het Nederlands gebruikt worden zijn correct
+- Controleer alleen op typfouten, niet op "vreemde" woorden
+
 Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
 {
   "correct": true of false,
   "correctWord": "het juiste Nederlandse woord",
   "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
-  "imageQuery": "Engelse vertaling van het woord, moet exact overeenkomen tenzij het grensoverschrijdend is, 1-3 woord, geschikt als Pixabay zoekterm (bijv: cat, apple, bicycle)"
+  "imageQuery": "Engelse vertaling van het woord, 1-3 woord, geschikt als Pixabay zoekterm"
 }`;
 
 function getResetTime() {
