@@ -92,6 +92,7 @@ export default async function handler(req, res) {
         continue;
       }
       const parsed = parseResult(result.text);
+      console.log('AI response voor:', word, JSON.stringify(parsed));
 
       // Als de AI een correctWord met spatie teruggeeft, is het geen geldig enkel woord
       if (parsed.correctWord && parsed.correctWord.trim().includes(' ')) {
