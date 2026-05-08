@@ -1,20 +1,20 @@
 const PROMPT = (word) => `Controleer het volgende Nederlandse woord op spelling: "${word}"
 
 Regels:
-- Samengestelde woorden met eigennamen zijn correct (bijv: downsyndroom, alzheimerpatiënt)
+- Samengestelde woorden met eigennamen zijn correct (bijv: downsyndroom)
 - Medische termen en syndroomnamen zijn correct
-- Engelse leenwoorden die in het Nederlands gebruikt worden zijn correct
+- Controleer alleen op typfouten, niet op "vreemde" woorden
 
 Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
 {
+  "inappropriate": true of false,
   "correct": true of false,
   "correctWord": "het juiste Nederlandse woord",
   "uitleg": "korte uitleg voor een kind van 6-10 jaar (max 10 woorden)",
-  "imageQuery": "Engelse zoekterm voor Pixabay. Kies altijd een CONCREET zelfstandig naamwoord 
-dat het woord uitlegt voor een kind. Abstracte woorden zoals richtingen vervang je door 
-een scène: 'beneden' → 'child bottom stairs', 'boven' → 'child top stairs', 
-'naast' → 'friends sitting together'. Nooit abstracte termen zoals 'below' of 'above'."
-}`;
+  "imageQuery": "Engelse zoekterm voor Pixabay, altijd een CONCREET zelfstandig naamwoord geschikt voor kinderen. Abstracte richtingswoorden vervang je door een scène (bijv: 'beneden' → 'child bottom stairs'). Geef null als het woord ongepast is."
+}
+
+Als het woord ongepast, vulgair, seksueel of gewelddadig is voor kinderen: zet inappropriate op true en de rest op null.`;
 
 function getResetTime() {
   const now = new Date();
