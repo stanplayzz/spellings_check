@@ -4,7 +4,6 @@ Regels:
 - Samengestelde woorden met eigennamen zijn correct (bijv: downsyndroom, alzheimerpatiënt)
 - Medische termen en syndroomnamen zijn correct
 - Engelse leenwoorden die in het Nederlands gebruikt worden zijn correct
-- Controleer alleen op typfouten, niet op "vreemde" woorden
 
 Antwoord ALLEEN met een geldig JSON object, geen uitleg, geen markdown backticks:
 {
