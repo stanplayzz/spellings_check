@@ -1,26 +1,13 @@
 const PROMPT = (word) => `Je bent een spellingchecker voor kinderen van 6-10 jaar op een Nederlandse basisschool.
 
 Controleer het woord: "${word}"
-
-BELANGRIJK: Markeer "inappropriate: true" voor ALLE woorden die:
-- Verwijzen naar naaktheid of het menselijk lichaam op een seksuele manier
-- Seksueel van aard zijn
-- Grof of vulgair zijn
-- Gewelddadig zijn
-- Niet geschikt zijn voor kinderen
-
-Voorbeelden van inappropriate woorden: naakt, seks, kut, lul, porno, borsten, schelden.
-
 Antwoord ALLEEN met een geldig JSON object:
 {
-  "inappropriate": true of false,
   "correct": true of false,
-  "correctWord": "het juiste woord of null",
-  "uitleg": "korte uitleg voor een kind (max 10 woorden) of null",
-  "imageQuery": "Engelse Pixabay zoekterm of null"
-}
-
-Als inappropriate true is, zet dan correct, correctWord, uitleg en imageQuery allemaal op null.`;
+  "correctWord": "het juiste woord",
+  "uitleg": "korte uitleg voor een kind (max 10 woorden)",
+  "imageQuery": "Engelse Pixabay zoekterm"
+}`;
 
 function getResetTime() {
   const now = new Date();
